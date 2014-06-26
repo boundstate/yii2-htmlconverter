@@ -1,8 +1,10 @@
 # yii2-pdf
 
-  PDF extension for the Yii2 framework
+  PDF extension for the Yii2 framework that uses [wkhtmltopdf] to generate PDF files from HTML.
 
 ## Installation
+
+  This extensions relies on `wkhtmltopdf`.  Installation insructions are provided on the [wkhtmltopdf website] [wkhtmltopdf].
 
   The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
@@ -53,3 +55,4 @@
     $html = $this->render('hello-word');
     $pdf = Yii::$app->htmlToPdf->convert($html, ['page-size' => 'A4']);
 
+[wkhtmltopdf]: http://wkhtmltopdf.org/
