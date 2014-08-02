@@ -23,7 +23,7 @@ abstract class BaseConverter extends Component
      */
     public $options = [];
     /**
-     * @var string the directory to store temporary files during PDF generation. You may use path alias here.
+     * @var string the directory to store temporary files during conversion. You may use path alias here.
      * If not set, it will use the "htmlconverter" subdirectory under the application runtime path.
      */
     public $tempPath = '@runtime/htmlconverter';
@@ -42,7 +42,7 @@ abstract class BaseConverter extends Component
     public $dirMode = 0775;
 
     /**
-     * Initializes the PDF Generator and ensures the temp path exists.
+     * Initializes the converter and ensures the temp path exists.
      */
     public function init()
     {
@@ -82,7 +82,7 @@ abstract class BaseConverter extends Component
     /**
      * Runs the command.
      * @param string $htmlFilename HTML filename
-     * @param string $destFilename PDF filename
+     * @param string $destFilename destination filename
      * @param array $options
      * @throws Exception
      */
