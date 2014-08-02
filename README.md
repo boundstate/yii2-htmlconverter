@@ -64,7 +64,8 @@
   You can also manually generate a PDF from HTML:
 
     $html = $this->render('hello-word');
-    $pdf = Yii::$app->htmlToPdf->convert($html, ['page-size' => 'A4']);
+    $header = $this->render('hello-world-header');
+    $pdf = Yii::$app->htmlToPdf->convert($html, ['page-size' => 'A4', 'header-html' => $header]);
 
   Or generate an image from HTML:
 

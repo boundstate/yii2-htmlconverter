@@ -21,7 +21,8 @@ class HtmlToPdfConverter extends BaseConverter
     /**
      * Converts HTML to a PDF file.
      * @param string $html HTML
-     * @param array $options
+     * @param array $options options passed directly to wkhtmltopdf, with the exception of header-html and footer-html,
+     * which should be HTML instead of URLs.
      * @return string PDF file contents
      */
     public function convert($html, $options = [])
@@ -29,17 +30,39 @@ class HtmlToPdfConverter extends BaseConverter
         // Override any global options with locally specified options
         $options = ArrayHelper::merge($this->options, $options);
 
-        // Generate temp HTML file
-        $htmlFilename = $this->getTempFilename('html');
-        $this->createHtmlFile($html, $htmlFilename);
+        // Generate temp HTML file for content
+        $contentFilename = $this->getTempFilename('html');
+        $this->createHtmlFile($html, $contentFilename);
+
+        // Generate temp HTML file for header (if specified)
+        $headerFilename = null;
+        if (isset($options['header-html'])) {
+            $headerFilename = $this->getTempFilename('html');
+            $this->createHtmlFile($options['header-html'], $headerFilename);
+            $options['header-html'] = $headerFilename;
+        }
+        
+        // Generate temp HTML file for footer (if specified)
+        $footerFilename = null;
+        if (isset($options['footer-html'])) {
+            $footerFilename = $this->getTempFilename('html');
+            $this->createHtmlFile($options['footer-html'], $footerFilename);
+            $options['footer-html'] = $footerFilename;
+        }
 
         // Generate temp PDF file and get contents
         $pdfFilename = $this->getTempFilename('pdf');
-        $this->runCommand($htmlFilename, $pdfFilename, $options);
+        $this->runCommand($contentFilename, $pdfFilename, $options);
         $data = @file_get_contents($pdfFilename);
 
         // Cleanup
-        @unlink($htmlFilename);
+        @unlink($contentFilename);
+        if ($headerFilename !== null) {
+            @unlink($headerFilename);
+        }
+        if ($footerFilename !== null) {
+            @unlink($footerFilename);
+        }
         @unlink($pdfFilename);
 
         return $data;
