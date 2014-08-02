@@ -1,6 +1,6 @@
-# yii2-pdf
+# yii2-htmlconverter
 
-  PDF extension for the Yii2 framework that uses [wkhtmltopdf] to generate PDF files from HTML.
+  Extension for the Yii2 framework that converts HTML to PDF or images using [wkhtmltopdf].
 
 ## Installation
 
@@ -10,11 +10,11 @@
 
   Either run
 
-    php composer.phar require --prefer-dist boundstate/yii2-pdf "*"
+    php composer.phar require --prefer-dist boundstate/yii2-htmlconverter "*"
 
   or add
 
-    "boundstate/yii2-pdf": "*"
+    "boundstate/yii2-htmlconverter": "*"
 
   to the require section of your `composer.json` file.
 
@@ -23,8 +23,8 @@
   Setup the components in your config:
 
     'htmlToPdf' => [
-        'class' => 'boundstate\pdf\HtmlToPdfConverter',
-        'bin' => '/usr/sbin/wkhtmltopdf',
+        'class' => 'boundstate\htmlconverter\HtmlToPdfConverter',
+        'bin' => '/usr/bin/wkhtmltopdf',
         // global wkhtmltopdf command line options
         // (see http://wkhtmltopdf.org/usage/wkhtmltopdf.txt)
         'options' => [
@@ -36,12 +36,19 @@
             'load-media-error-handling' => 'ignore'
         ],
     ],
+    'htmlToImage' => [
+        'class' => 'boundstate\htmlconverter\HtmlToImageConverter',
+        'bin' => '/usr/bin/wkhtmltoimage',
+    ],
     'response' => [
         'formatters' => [
             'pdf' => [
-                'class' => 'boundstate\pdf\PdfResponseFormatter',
+                'class' => 'boundstate\htmlconverter\PdfResponseFormatter',
                 // Set a filename to download the response as an attachments (instead of displaying in browser)
                 'filename' => 'attachment.pdf'
+            ],
+            'image' => [
+                'class' => 'boundstate\htmlconverter\ImageResponseFormatter',
             ],
         ]
     ],
@@ -50,9 +57,18 @@
 
     Yii::$app->response->format = 'pdf';
 
-  Or manually generate a PDF from HTML:
+  Or format a response as an image:
+
+    Yii::$app->response->format = 'image';
+
+  You can also manually generate a PDF from HTML:
 
     $html = $this->render('hello-word');
     $pdf = Yii::$app->htmlToPdf->convert($html, ['page-size' => 'A4']);
+
+  Or generate an image from HTML:
+
+    $html = $this->render('hello-word');
+    $pdf = Yii::$app->htmlToImage->convert($html);
 
 [wkhtmltopdf]: http://wkhtmltopdf.org/

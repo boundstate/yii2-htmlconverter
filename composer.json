@@ -1,8 +1,8 @@
 {
-    "name": "boundstate/yii2-pdf",
-    "description": "PDF extension for the Yii framework",
+    "name": "boundstate/yii2-htmlconverter",
+    "description": "Supports conversion of HTML to PDF or images",
     "type": "yii2-extension",
-    "keywords": ["yii2","pdf","wkhtmltopdf"],
+    "keywords": ["yii2","pdf","html","image","wkhtmltopdf","wkhtmltoimage","wkhtmltox"],
     "license": "MIT",
     "authors": [
         {
@@ -12,7 +12,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "boundstate\\pdf\\": ""
+            "boundstate\\htmlconverter\\": ""
         }
     }
 }
