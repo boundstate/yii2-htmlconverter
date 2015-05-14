@@ -89,22 +89,31 @@ abstract class BaseConverter extends Component
     protected function runCommand($htmlFilename, $destFilename, $options = [])
     {
         $command = $this->getCommand($htmlFilename, $destFilename, $options);
-        $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+
+        Yii::trace("Running command: $command", __METHOD__);
+
+        // Using proc_open with pipes can cause issues on Windows (https://bugs.php.net/bug.php?id=51800)
+        // Write STDOUT and STDERR to files instead
+        $stdout = $this->getTempFilename('log');
+        $stderr = $this->getTempFilename('log');
+
+        $process = proc_open($command, [1 => ['file', $stdout, 'a'], 2 => ['file', $stderr, 'a']], $pipes);
 
         if (!is_resource($process))
             throw new Exception("Could not run command $command");
 
-        // Get stdout and stderr from pipes and then close them
-        $stdout = stream_get_contents($pipes[1]);
-        $stderr = stream_get_contents($pipes[2]);
-        fclose($pipes[1]);
-        fclose($pipes[2]);
-
         $result = proc_close($process);
 
-        // Expect command to exit with code 0 (or code 1 due to an http error)
-        if ($result !== 0 && $result !== 1)
-            throw new Exception("Could not run command $command:\n$stderr");
+        // Clean up
+        $output = trim(file_get_contents($stdout) . file_get_contents($stderr));
+        @unlink($stdout);
+        @unlink($stderr);
+
+        if ($result === 0) {
+            Yii::info($output, __METHOD__);
+        } else {
+            Yii::error($output, __METHOD__);
+        }
     }
 
     /**
